@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CS Stays — villa & chalet booking demo
 
-## Getting Started
+Prospect demo inspired by the CS Villas guest flow: homepage search, stays catalog with date filtering, property pages with calendar + request-to-book, and an admin back office that confirms bookings and blocks dates.
 
-First, run the development server:
+Guest site and admin share one availability engine (SQLite). Pending requests do not block inventory; confirmed bookings and admin blocks do.
+
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind
+- SQLite via Drizzle ORM + better-sqlite3
+- date-fns, react-day-picker, Zod
+- Vitest for availability rules
+
+## Setup
 
 ```bash
+npm install
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Admin
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- URL: [http://localhost:3000/admin](http://localhost:3000/admin)
+- Email: `admin@demo.local`
+- Password: `admin123`
 
-## Learn More
+Re-seed anytime with `npm run db:seed` (resets the local database).
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the demo |
+| `npm run db:seed` | Reset and seed SQLite |
+| `npm test` | Run availability unit tests |
+| `npm run build` | Production build |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Demo walkthrough
 
-## Deploy on Vercel
+1. On the homepage, search Saint-Tropez for a week of dates and open a property.
+2. Pick fewer than 7 nights — the form blocks the request.
+3. Pick a valid week, submit a booking request.
+4. Sign in to admin, confirm the request.
+5. Search the same dates again — that property no longer appears.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Seeded fixtures already include a confirmed July week on Villa Eupheme, a pending Christmas request on Chalet Andaz, and owner/maintenance blocks on Villa La Ferme and Chalet Namur.
