@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
+import { ensureDb } from "@/db/ensure";
 import { blocks, bookings, properties } from "@/db/schema";
 import {
   clearAdminSession,
@@ -58,6 +59,7 @@ export async function logoutAdmin() {
 
 export async function updateBookingStatus(formData: FormData) {
   await requireAdmin();
+  await ensureDb();
   const id = String(formData.get("id") || "");
   const status = String(formData.get("status") || "");
 
@@ -105,6 +107,7 @@ export async function updateProperty(
   formData: FormData,
 ): Promise<AdminActionState> {
   await requireAdmin();
+  await ensureDb();
 
   const parsed = propertyUpdateSchema.safeParse({
     id: formData.get("id"),
@@ -162,6 +165,7 @@ export async function createBlock(
   formData: FormData,
 ): Promise<AdminActionState> {
   await requireAdmin();
+  await ensureDb();
 
   const parsed = blockSchema.safeParse({
     propertyId: formData.get("propertyId"),
@@ -191,6 +195,7 @@ export async function createBlock(
 
 export async function deleteBlock(formData: FormData) {
   await requireAdmin();
+  await ensureDb();
   const id = String(formData.get("id") || "");
   const propertyId = String(formData.get("propertyId") || "");
   if (!id) {

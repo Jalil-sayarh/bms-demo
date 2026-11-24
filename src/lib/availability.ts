@@ -1,5 +1,6 @@
 import { and, eq, inArray, ne } from "drizzle-orm";
 import { db } from "@/db";
+import { ensureDb } from "@/db/ensure";
 import { blocks, bookings, properties } from "@/db/schema";
 import { isDateRangeValid, nightsBetween, rangesOverlap } from "./dates";
 import { quoteStay } from "./pricing";
@@ -62,6 +63,7 @@ export async function getOccupiedRanges(
   propertyId: string,
   options?: { excludeBookingId?: string },
 ): Promise<OccupancyRange[]> {
+  await ensureDb();
   const confirmed = await db
     .select({
       id: bookings.id,
@@ -111,6 +113,7 @@ export async function checkPropertyAvailability(input: {
   guests: number;
   excludeBookingId?: string;
 }): Promise<AvailabilityResult> {
+  await ensureDb();
   const [property] = await db
     .select()
     .from(properties)
@@ -160,6 +163,7 @@ export async function searchAvailableProperties(input: {
   checkOut?: string;
   guests?: number;
 }) {
+  await ensureDb();
   const all = await db.select().from(properties).where(eq(properties.published, true));
 
   const guests = input.guests ?? 1;

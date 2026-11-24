@@ -3,6 +3,7 @@
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
+import { ensureDb } from "@/db/ensure";
 import { bookings } from "@/db/schema";
 import { checkPropertyAvailability } from "@/lib/availability";
 import { bookingRequestSchema } from "@/lib/validators";
@@ -31,6 +32,7 @@ export async function createBookingRequest(
     return { ok: false, message: "Please check the form fields and try again." };
   }
 
+  await ensureDb();
   const data = parsed.data;
   const availability = await checkPropertyAvailability({
     propertyId: data.propertyId,

@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { db } from "@/db";
+import { ensureDb } from "@/db/ensure";
 import { admins } from "@/db/schema";
 
 const SESSION_COOKIE = "villa_admin_session";
@@ -11,6 +12,7 @@ export async function verifyAdminCredentials(
   email: string,
   password: string,
 ): Promise<boolean> {
+  await ensureDb();
   const [admin] = await db
     .select()
     .from(admins)

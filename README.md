@@ -2,16 +2,18 @@
 
 Prospect demo inspired by the CS Villas guest flow: homepage search, stays catalog with date filtering, property pages with calendar + request-to-book, and an admin back office that confirms bookings and blocks dates.
 
-Guest site and admin share one availability engine (SQLite). Pending requests do not block inventory; confirmed bookings and admin blocks do.
+Guest site and admin share one availability engine. Pending requests do not block dates; confirmed bookings and admin blocks do.
+
+Demo made for Thomas Tomaski by [Jalil Sayarh](https://jalilsayarh.com/now).
 
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind
-- SQLite via Drizzle ORM + better-sqlite3
+- libSQL / SQLite via Drizzle (`@libsql/client`) — local file in dev, Turso on Vercel
 - date-fns, react-day-picker, Zod
 - Vitest for availability rules
 
-## Setup
+## Local setup
 
 ```bash
 npm install
@@ -23,27 +25,36 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Admin
 
-- URL: [http://localhost:3000/admin](http://localhost:3000/admin)
+- URL: `/admin`
 - Email: `admin@demo.local`
 - Password: `admin123`
 
-Re-seed anytime with `npm run db:seed` (resets the local database).
+## Deploy on Vercel (required for a live prospect link)
+
+Local `better-sqlite3` / file SQLite cannot run on Vercel serverless. This app uses **Turso** (hosted libSQL).
+
+1. Create a free DB at [turso.tech](https://turso.tech) (or `brew install tursodatabase/tap/turso` then `turso db create bms-demo`).
+2. Copy the URL and a token:
+
+```bash
+turso db show bms-demo --url
+turso db tokens create bms-demo
+```
+
+3. In the Vercel project → Settings → Environment Variables, add:
+
+| Name | Value |
+| --- | --- |
+| `TURSO_DATABASE_URL` | `libsql://…turso.io` |
+| `TURSO_AUTH_TOKEN` | token from Turso |
+
+4. Redeploy. The first request creates tables and seeds demo data automatically.
 
 ## Scripts
 
 | Command | Purpose |
 | --- | --- |
 | `npm run dev` | Start the demo |
-| `npm run db:seed` | Reset and seed SQLite |
+| `npm run db:seed` | Reset and seed the local (or Turso) database |
 | `npm test` | Run availability unit tests |
 | `npm run build` | Production build |
-
-## Demo walkthrough
-
-1. On the homepage, search Saint-Tropez for a week of dates and open a property.
-2. Pick fewer than 7 nights — the form blocks the request.
-3. Pick a valid week, submit a booking request.
-4. Sign in to admin, confirm the request.
-5. Search the same dates again — that property no longer appears.
-
-Seeded fixtures already include a confirmed July week on Villa Eupheme, a pending Christmas request on Chalet Andaz, and owner/maintenance blocks on Villa La Ferme and Chalet Namur.

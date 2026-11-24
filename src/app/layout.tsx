@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ensureDb } from "@/db/ensure";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,7 +19,9 @@ export const metadata: Metadata = {
     "Demo booking platform for prestige villa rentals in Saint-Tropez and alpine chalets in Courchevel.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  await ensureDb();
+
   return (
     <html
       lang="en"
